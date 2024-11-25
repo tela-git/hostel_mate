@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Hostel Mate</string>
+    <string name="hostel_mate_headline_capital">HOSTEL MATE</string>
+    <string name = "hostel_mate_headline">Hostel Mate</string>
+    <string name="onboarding_slogan">Stay Organized, Stay Comfortable</string>
+    <string name="onboarding_supporting_text">Your Home Away from Home!</string>
+    <string name="lets_go">Let\'s Go</string>
+</resources>
