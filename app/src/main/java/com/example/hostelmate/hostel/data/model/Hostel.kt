@@ -7,5 +7,11 @@ data class Hostel(
     val photos: List<String>,
     val description: String,
     val rating: Double,
-    val facilities: List<String>
+    val facilities: List<String>,
+    val type: HostelType
 )
+
+enum class HostelType {
+    GIRLS,
+    BOYS
+}
