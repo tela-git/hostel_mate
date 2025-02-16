@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.hostelmate" />
+                  <option name="mobileSdkAppId" value="1:910956016556:android:9ce185f8f8065462528009" />
+                  <option name="projectId" value="hostel-mate-686d0" />
+                  <option name="projectNumber" value="910956016556" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
