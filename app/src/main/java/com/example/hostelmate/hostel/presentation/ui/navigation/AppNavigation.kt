@@ -20,7 +20,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = appNavController,
-        startDestination = AppNavGraph.AuthNavGraph
+        startDestination = AppNavGraph.MainNavGraph
     ) {
         navigation<AppNavGraph.AuthNavGraph>(
             startDestination = AppNavGraph.AuthNavGraph.OnBoarding

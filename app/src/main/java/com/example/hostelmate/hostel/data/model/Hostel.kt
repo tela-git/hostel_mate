@@ -8,10 +8,15 @@ data class Hostel(
     val description: String,
     val rating: Double,
     val facilities: List<String>,
-    val type: HostelType
+    val type: HostelType,
+    val fee: Int,
 )
 
-enum class HostelType {
-    GIRLS,
-    BOYS
+sealed class HostelType(val name: String) {
+    data object GIRLS : HostelType("Girls")
+    data object BOYS: HostelType("Boys")
+
+    companion object {
+        val list = listOf("Girls", "Boys")
+    }
 }

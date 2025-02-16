@@ -81,9 +81,11 @@ fun HostelAppBottomBar(
                     )
                     Text(
                         text = topLevelRoute.displayName,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Normal,
-                        lineHeight = 16.8.sp,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal,
+                            fontSize = if(isSelected) 12.sp else 10.sp
+                        )
                     )
                 }
             }
