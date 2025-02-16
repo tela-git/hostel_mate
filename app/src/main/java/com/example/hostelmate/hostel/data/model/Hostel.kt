@@ -6,5 +6,6 @@ data class Hostel(
     val city: String,
     val photos: List<String>,
     val description: String,
-    val rating: Double
+    val rating: Double,
+    val facilities: List<String>
 )
