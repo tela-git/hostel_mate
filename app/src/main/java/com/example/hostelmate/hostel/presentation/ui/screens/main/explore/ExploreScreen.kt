@@ -288,16 +288,15 @@ fun TopRatedHostels(
         )
         HorizontalPager(
             state = pagerState,
-            pageSpacing = 4.dp,
-            contentPadding = PaddingValues(horizontal = 24.dp),
+            pageSpacing = 2.dp,
+            contentPadding = PaddingValues(horizontal = 20.dp),
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            var imageLoaded by remember { mutableStateOf(false) }
 
             Box(
                 contentAlignment = Alignment.BottomStart,
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
+                    .fillMaxWidth(0.95f)
                     .aspectRatio(16f / 9f)
                     .clickable {
                         navigateToHostelDetail(topHostels[page].id)
@@ -309,8 +308,6 @@ fun TopRatedHostels(
                         .crossfade(true)
                         .build(),
                     contentDescription = null,
-                    onSuccess = { imageLoaded = true },
-                    onLoading = { imageLoaded = false },
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(10.dp)),

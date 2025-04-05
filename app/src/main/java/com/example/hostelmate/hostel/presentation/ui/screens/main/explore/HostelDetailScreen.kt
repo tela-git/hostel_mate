@@ -231,11 +231,33 @@ fun HostelDetailScreen(
                 LoadingPageOne()
             }
             else if(hostelUI.isError) {
-                Text(
-                    text = "Error"
-                )
+                ErrorMessage()
             }
         }
+    }
+}
+
+@Composable
+fun ErrorMessage() {
+    Column(
+      modifier = Modifier
+          .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(Modifier.height(160.dp))
+        Image(
+            painter = painterResource(R.drawable.error_bg),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp)),
+            alpha = 0.9f
+        )
+        Spacer(Modifier.height(20.dp))
+        Text(
+            text = "DO DETAILS FOUND !",
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }
 
@@ -294,7 +316,6 @@ fun HostelImages(
                         .aspectRatio(16f / 9f)
                         .clip(RoundedCornerShape(10.dp)),
                     contentScale = ContentScale.Fit,
-                    alpha = 0.9f,
                 )
             }
             Text(

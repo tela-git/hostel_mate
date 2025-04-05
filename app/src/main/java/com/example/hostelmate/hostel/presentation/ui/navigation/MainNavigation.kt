@@ -15,7 +15,7 @@ fun NavGraphBuilder.mainNavigation(
     appNavController: NavController
 ) {
     navigation<AppNavGraph.MainNavGraph>(
-        startDestination = AppNavGraph.MainNavGraph.HostelDetail("uUMHzBFlxY7g2movehJd")
+        startDestination = AppNavGraph.MainNavGraph.Explore
     ) {
         composable<AppNavGraph.MainNavGraph.Explore> {
             ExploreScreen(
