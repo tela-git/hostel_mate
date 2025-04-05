@@ -4,19 +4,14 @@ data class Hostel(
     val id: String,
     val name: String,
     val city: String,
-    val photos: List<String>,
+    val pictures: List<String>,
     val description: String,
     val rating: Double,
     val facilities: List<String>,
-    val type: HostelType,
-    val fee: Int,
+    val hostelType: HostelType,
+    val stayOptions: List<StayOption>,
+    val locality: String,
+    val coordinates: Coordinate,
+    val managerName: String,
+    val managerContact: String
 )
-
-sealed class HostelType(val name: String) {
-    data object GIRLS : HostelType("Girls")
-    data object BOYS: HostelType("Boys")
-
-    companion object {
-        val list = listOf("Girls", "Boys")
-    }
-}

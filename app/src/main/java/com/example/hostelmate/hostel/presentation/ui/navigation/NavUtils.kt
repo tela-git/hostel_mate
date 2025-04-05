@@ -22,6 +22,10 @@ sealed class AppNavGraph {
         data object Chats: AppNavGraph()
         @Serializable
         data object Account: AppNavGraph()
+        @Serializable
+        data class HostelDetail(
+            val hostelId: String
+        ) : AppNavGraph()
     }
 
 }

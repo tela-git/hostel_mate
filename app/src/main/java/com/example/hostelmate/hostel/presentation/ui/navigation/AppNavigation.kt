@@ -20,91 +20,13 @@ fun AppNavigation() {
 
     NavHost(
         navController = appNavController,
-        startDestination = AppNavGraph.AuthNavGraph
+        startDestination = AppNavGraph.MainNavGraph
     ) {
-        navigation<AppNavGraph.AuthNavGraph>(
-            startDestination = AppNavGraph.AuthNavGraph.OnBoarding
-        ) {
-            composable<AppNavGraph.AuthNavGraph.OnBoarding> {
-                OnBoardingScreen(
-                    modifier = Modifier,
-                    onNavigateToLogin = {
-                        appNavController.navigate(AppNavGraph.AuthNavGraph.Login)
-                    }
-                )
-            }
-            composable<AppNavGraph.AuthNavGraph.Login> {
-                LoginScreen(
-                    onSignUpInsteadClick = {
-                        appNavController.navigate(AppNavGraph.AuthNavGraph.SignUp)
-                    },
-                    onGuestLoginClick = {
-                        appNavController.navigate(AppNavGraph.MainNavGraph) {
-                            popUpTo(AppNavGraph.AuthNavGraph) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
-            }
-            composable<AppNavGraph.AuthNavGraph.SignUp> {
-                SignUpScreen(
-                    onLoginInsteadClick = {
-                        appNavController.navigate(AppNavGraph.AuthNavGraph.Login) {
-                            popUpTo(AppNavGraph.AuthNavGraph.SignUp) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
-            }
-        }
-
-        navigation<AppNavGraph.MainNavGraph>(
-            startDestination = AppNavGraph.MainNavGraph.Explore
-        ) {
-            composable<AppNavGraph.MainNavGraph.Explore> {
-                ExploreScreen(
-                    currentDestination = appNavController.currentDestination,
-                    onBottomNavItemClick = {route ->
-                        appNavController.navigate(route) {
-                            popUpTo(AppNavGraph.MainNavGraph.Explore) {
-                                saveState = true
-                                inclusive = false
-                            }
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
-            composable<AppNavGraph.MainNavGraph.MyHostel> {
-                MyHostelScreen(
-                    currentDestination = appNavController.currentDestination,
-                    onBottomNavIconClick = {route->
-                        appNavController.navigate(route) {
-                            popUpTo(AppNavGraph.MainNavGraph.Explore) {
-                                saveState = true
-                                inclusive = false
-                            }
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
-            composable<AppNavGraph.MainNavGraph.Account> {
-                AccountScreen(
-                    currentDestination = appNavController.currentDestination,
-                    onBottomNavIconClick = {route->
-                        appNavController.navigate(route) {
-                            popUpTo(AppNavGraph.MainNavGraph.Explore) {
-                                saveState = true
-                                inclusive = false
-                            }
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
-        }
+        authNavigation(
+            appNavController = appNavController
+        )
+        mainNavigation(
+            appNavController = appNavController
+        )
     }
 }

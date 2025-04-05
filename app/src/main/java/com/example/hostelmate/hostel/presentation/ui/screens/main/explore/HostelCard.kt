@@ -73,7 +73,7 @@ fun HostelCard(
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(hostel.photos.first())
+                        .data(hostel.pictures.first())
                         .crossfade(true)
                         .build(),
                     contentDescription = "",
@@ -88,17 +88,17 @@ fun HostelCard(
 
                 ) {
                     Text(
-                        text = "Type: " + if(hostel.type == HostelType.GIRLS) "Girls" else "Boys",
+                        text = "Type: " + if(hostel.hostelType == HostelType.GIRLS) "Girls" else "Boys",
                         style = MaterialTheme.typography.labelLarge
                     )
                     Text(
                         text = "Rating: ${hostel.rating}",
                         style = MaterialTheme.typography.bodySmall
                     )
-                    Text(
-                        text = "Fee: ₹${hostel.fee}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+//                    Text(
+//                        text = "Fee: ₹${hostel.fee}",
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
                     Text(
                         text = "Place: ${hostel.city}",
                         style = MaterialTheme.typography.bodySmall

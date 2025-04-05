@@ -95,9 +95,9 @@ fun HostelAppBottomBar(
 
 
 val topLevelRoutes = listOf(
-    TopLevelRoute("Explore", R.drawable.explore_outlined, R.drawable.explore_filled, AppNavGraph.MainNavGraph.Explore),
+    TopLevelRoute("Explore", R.drawable.explore_outlined_new, R.drawable.explore_filled_new, AppNavGraph.MainNavGraph.Explore),
     TopLevelRoute("My Hostel", R.drawable.hostel_new_outlined, R.drawable.hostel_new_filled, AppNavGraph.MainNavGraph.MyHostel),
-    TopLevelRoute("Account", R.drawable.account_outlined, R.drawable.account_filled, AppNavGraph.MainNavGraph.Account),
+    TopLevelRoute("Account", R.drawable.account_outlined_new, R.drawable.account_filled_new, AppNavGraph.MainNavGraph.Account),
 )
 
 data class TopLevelRoute<T: Any>(

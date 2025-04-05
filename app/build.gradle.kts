@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.hostelmate"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.hostelmate"
@@ -110,6 +110,9 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    // Placeholder
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
