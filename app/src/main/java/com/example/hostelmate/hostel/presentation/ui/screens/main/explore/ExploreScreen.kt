@@ -36,15 +36,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Girl
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.Boy
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Girl
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -89,6 +93,8 @@ import com.example.hostelmate.hostel.presentation.ui.components.app_bars.HostelA
 import com.example.hostelmate.hostel.presentation.ui.navigation.AppNavGraph
 import com.example.hostelmate.hostel.presentation.ui.screens.main.explore.viewmodel.ExploreUIState
 import com.example.hostelmate.hostel.presentation.ui.screens.main.explore.viewmodel.ExploreViewModel
+import com.example.hostelmate.hostel.presentation.ui.screens.main.explore.viewmodel.SortType
+import com.example.hostelmate.hostel.presentation.ui.screens.main.explore.viewmodel.sortOptions
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -102,16 +108,6 @@ fun ExploreScreen(
 ) {
     val viewModel: ExploreViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val scope = rememberCoroutineScope()
-
-    var currentHostelType: HostelType? by remember { mutableStateOf(null) }
-    val filteredList = uiState.hostels?.let { hostels ->
-        if (currentHostelType != null) {
-            hostels.filter { it.hostelType == currentHostelType }
-        } else {
-            hostels
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -160,7 +156,19 @@ fun ExploreScreen(
                         enter = fadeIn() + slideInHorizontally(),
                         exit = fadeOut() + slideOutVertically()
                     ) {
-                        CityAndSortOptions()
+                        Column() {
+                            CityAndSortOptions(
+                                sortOptions = sortOptions,
+                                onSelectionChange = { viewModel.filterUpdateSortType(it) },
+                                selectedIndex = sortOptions.indexOf(uiState.sortType)
+                            )
+                            HostelTypeOptions(
+                                currentOption = uiState.genderFilter,
+                                onHostelTypeChange = { hostelType ->
+                                    viewModel.filterUpdateHostelType(hostelType)
+                                }
+                            )
+                        }
                     }
                 }
                 item {
@@ -182,7 +190,7 @@ fun ExploreScreen(
                         }
                     }
                 }
-                if(uiState.hostels != null) {
+                if(uiState.hostels != null && uiState.searchText.isNotEmpty()) {
                     items(
                         items = uiState.hostels!!,
                         key = { it.id }
@@ -196,7 +204,7 @@ fun ExploreScreen(
                 item {  }
             }
         }
-        if(uiState.notFound && uiState.searchText.isNotEmpty()) {
+        if(uiState.notFound && uiState.searchText.isNotEmpty() && uiState.hostels.isNullOrEmpty()) {
             NoItemsFound()
         }
         if(uiState.isLoading) {
@@ -208,6 +216,51 @@ fun ExploreScreen(
             ) {
                 CircularProgressIndicator()
             }
+        }
+    }
+}
+
+@Composable
+fun HostelTypeOptions(
+    currentOption: HostelType?,
+    onHostelTypeChange: (HostelType?) -> Unit,
+) {
+    Row(
+
+    ) {
+        IconButton(
+            onClick = {
+                if(currentOption == HostelType.GIRLS) {
+                    onHostelTypeChange(null)
+                } else {
+                    onHostelTypeChange(HostelType.GIRLS)
+                }
+            },
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = if(currentOption == HostelType.GIRLS) MaterialTheme.colorScheme.primaryContainer else Color.Unspecified
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Girl,
+                contentDescription = "girls hostel"
+            )
+        }
+        IconButton(
+            onClick = {
+                if(currentOption == HostelType.BOYS) {
+                    onHostelTypeChange(null)
+                } else {
+                    onHostelTypeChange(HostelType.BOYS)
+                }
+            },
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = if(currentOption == HostelType.BOYS) MaterialTheme.colorScheme.primaryContainer else Color.Unspecified
+            )
+        ) {
+            Icon(
+                imageVector =  Icons.Outlined.Boy,
+                contentDescription = "boys hostel"
+            )
         }
     }
 }
@@ -364,9 +417,11 @@ fun HomeBanner() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CityAndSortOptions() {
-    val sortOptions = listOf("nearby","popular", "price: low-high", "price: high-low")
-    var selectedIndex by remember { mutableStateOf(0) }
+private fun CityAndSortOptions(
+    sortOptions: List<SortType>,
+    selectedIndex: Int,
+    onSelectionChange: (SortType) -> Unit,
+) {
     SecondaryScrollableTabRow(
         selectedTabIndex = selectedIndex,
         divider = { },
@@ -376,7 +431,7 @@ private fun CityAndSortOptions() {
         sortOptions.forEach { option->
             val selected = selectedIndex == sortOptions.indexOf(option)
             OutlinedButton(
-                onClick = { selectedIndex = sortOptions.indexOf(option)},
+                onClick = { onSelectionChange(option) },
                 contentPadding = PaddingValues(6.dp),
                 modifier = Modifier
                     .height(32.dp)
@@ -387,7 +442,7 @@ private fun CityAndSortOptions() {
                 )
             ) {
                 Text(
-                    text = option,
+                    text = option.name,
                     style = MaterialTheme.typography.labelMedium,
                     color = if(selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
                 )

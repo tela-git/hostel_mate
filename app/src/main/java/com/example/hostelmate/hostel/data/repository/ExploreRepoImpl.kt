@@ -96,7 +96,7 @@ class ExploreRepoImpl(
                         "GIRLS" -> HostelType.GIRLS
                         else -> HostelType.UNAVAILABLE
                     }
-                    val locality = doc.getString("locality")
+                    val locality = doc.getString("locality") ?: "unavailable"
                     val managerName = doc.getString("managerName") ?: "unavailable"
                     val managerContact = doc.getString("managerContact") ?: "unavailable"
                     val rating = doc.getString("rating")?.toDoubleOrNull()
@@ -110,9 +110,9 @@ class ExploreRepoImpl(
                             sharing = sharing.toInt(),
                             cost = price.toInt()
                         )
-                    }
+                    } ?: emptyList()
 
-                    if (name != null && city != null && locality != null && rating != null && stayOptions != null) {
+                    if (name != null && city != null && rating != null) {
                         Hostel(
                             id = doc.id,
                             name = name,

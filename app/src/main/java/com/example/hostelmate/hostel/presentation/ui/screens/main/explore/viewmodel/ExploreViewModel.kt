@@ -1,5 +1,6 @@
 package com.example.hostelmate.hostel.presentation.ui.screens.main.explore.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,6 +28,7 @@ class ExploreViewModel(
         viewModelScope.launch {
             _uiState.update { state->
                 state.copy(
+                    originalList = emptyList(),
                     hostels = emptyList(),
                     isLoading = true,
                     notFound = false
@@ -36,6 +38,7 @@ class ExploreViewModel(
                 if(hostels.isNullOrEmpty()) {
                     _uiState.update { state->
                         state.copy(
+                            originalList = emptyList(),
                             hostels = emptyList(),
                             isLoading = false,
                             notFound = true
@@ -46,7 +49,8 @@ class ExploreViewModel(
                         state.copy(
                             isLoading = false,
                             hostels = hostels,
-                            notFound = false
+                            notFound = false,
+                            originalList = hostels
                         )
                     }
                 }
@@ -102,15 +106,51 @@ class ExploreViewModel(
 
     private fun filterHostelsList() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            delay(1000)
+            val allHostels = uiState.value.originalList
+            val genderFilter = uiState.value.genderFilter
+            val sortType = uiState.value.sortType
 
-            _uiState.update { it.copy(hostels = dummyTopHostels, isLoading = false) }
+            if (allHostels == null) {
+                Log.e("HostelFilter", "Original hostel list is null")
+                return@launch
+            }
 
+            var filtered = allHostels
+
+            if (genderFilter != null) {
+                filtered = filtered.filter { it.hostelType == genderFilter }
+            }
+
+            filtered = when (sortType) {
+                SortType.Popular -> filtered.sortedByDescending { it.rating }
+                SortType.PriceLowToHigh -> filtered.sortedBy { it.stayOptions.minOfOrNull { it.cost } ?: Int.MAX_VALUE }
+                SortType.PriceHighToLow -> filtered.sortedByDescending { it.stayOptions.maxOfOrNull { it.cost } ?: Int.MIN_VALUE }
+                SortType.NearBy -> filtered
+                null -> filtered
+            }
+
+            _uiState.update {
+                if(uiState.value.hostels.isNullOrEmpty()) {
+                    it.copy(
+                        hostels = filtered,
+                        notFound = false
+                ) } else {
+                    it.copy(
+                        hostels = filtered,
+                        notFound = true
+                    )
+                }
+            }
+
+            if (filtered.isEmpty()) {
+                Log.w("HostelFilter", "No hostels found after filtering")
+            }
         }
     }
 
-    fun filterUpdateHostelType(hostelType: HostelType) {
+
+
+    fun filterUpdateHostelType(hostelType: HostelType?) {
         _uiState.update { it.copy(genderFilter = hostelType) }
         filterHostelsList()
     }
@@ -118,23 +158,15 @@ class ExploreViewModel(
         _uiState.update { it.copy(sortType = sortType) }
         filterHostelsList()
     }
-    fun clearFilters() {
-        _uiState.update {
-            it.copy(
-                sortType = null,
-                genderFilter = null,
-                hostels = null
-            )
-        }
-    }
 
 }
 
 data class ExploreUIState(
+    val originalList : List<Hostel>? = null,
     val hostels: List<Hostel>? = null,
     val isLoading: Boolean = false,
     val searchText: String = "",
-    val sortType: SortType? = SortType.POPULAR,
+    val sortType: SortType? = SortType.Popular,
     val genderFilter: HostelType? = null,
     val notFound: Boolean = false
 )
@@ -145,9 +177,11 @@ data class HostelDetailsUI(
     val isLoading: Boolean = true
 )
 
-enum class SortType {
-    POPULAR,
-    PRICE_LOW_TO_HIGH,
-    PRICE_HIGH_TO_LOW
+sealed class SortType(val name: String) {
+    data object NearBy: SortType("Near by")
+    data object Popular: SortType("Popular")
+    data object PriceLowToHigh: SortType("Price: Low to High")
+    data object PriceHighToLow: SortType("Price: High to Low")
 }
 
+val sortOptions = listOf(SortType.NearBy, SortType.Popular, SortType.PriceLowToHigh, SortType.PriceHighToLow)
