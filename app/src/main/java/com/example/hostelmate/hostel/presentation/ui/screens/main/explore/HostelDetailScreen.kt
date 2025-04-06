@@ -74,6 +74,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -111,6 +112,13 @@ fun HostelDetailScreen(
         setPackage("com.google.android.apps.maps")
     }
 
+    val shareText = "Check out this hostel : ${hostel?.name} in ${hostel?.city}. This is rated ${hostel?.rating}. For details contact hostel manager: ${hostel?.managerName} ${hostel?.managerContact}"
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        type = "text/plain"
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -129,7 +137,7 @@ fun HostelDetailScreen(
                     if(hostel != null) {
                         IconButton(
                             onClick = {
-
+                               context.startActivity(Intent.createChooser(shareIntent, "Share via"))
                             }
                         ) {
                             Icon(
