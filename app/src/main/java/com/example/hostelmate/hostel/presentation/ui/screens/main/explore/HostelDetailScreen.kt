@@ -38,6 +38,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowDown
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
@@ -119,6 +120,12 @@ fun HostelDetailScreen(
         type = "text/plain"
     }
 
+    val phoneNumber = hostel?.managerContact
+    val callIntent = Intent(Intent.ACTION_DIAL).apply {
+        data = Uri.parse("tel:$phoneNumber")
+    }
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -153,25 +160,40 @@ fun HostelDetailScreen(
         },
         floatingActionButton = {
             if(hostel != null) {
-                FloatingActionButton(
-                    onClick = {
-                        context.startActivity(mapIntent)
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 20.dp)
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                Column {
+                    FloatingActionButton(
+                        onClick = {
+                            context.startActivity(callIntent)
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp, vertical = 16.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.LocationOn,
-                            contentDescription = "Locate hostel",
+                            imageVector = Icons.Filled.Call,
+                            contentDescription = "Call hostel",
                         )
-                        Text(
-                            text = "locate",
-                            style = MaterialTheme.typography.labelSmall
-                        )
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            context.startActivity(mapIntent)
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                            .padding(bottom = 20.dp)
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocationOn,
+                                contentDescription = "Locate hostel",
+                            )
+                            Text(
+                                text = "locate",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
                     }
                 }
             }
