@@ -3,6 +3,7 @@ package com.example.hostelmate.hostel.presentation.ui.screens.main.explore.viewm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hostelmate.hostel.data.fake_data.AvailableCity
 import com.example.hostelmate.hostel.data.fake_data.dummyTopHostels
 import com.example.hostelmate.hostel.data.model.Hostel
 import com.example.hostelmate.hostel.data.model.HostelType
@@ -22,16 +23,35 @@ class ExploreViewModel(
     private val _hostelDetails = MutableStateFlow(HostelDetailsUI())
     val hostelDetails = _hostelDetails.asStateFlow()
 
-    private fun getAllHostelsList() {
-        viewModelScope.launch{
-            _uiState.update { it.copy(isLoading = true) }
-           // delay(1500)
-            _uiState.update { it.copy(
-                isLoading = false,
-                hostels = dummyTopHostels
-            ) }
+    private fun searchHostels(key: String) {
+        viewModelScope.launch {
+            _uiState.update { state->
+                state.copy(
+                    hostels = emptyList(),
+                    isLoading = true,
+                    notFound = false
+                )
+            }
+            exploreRepository.searchHostels(key = key) { hostels->
+                if(hostels.isNullOrEmpty()) {
+                    _uiState.update { state->
+                        state.copy(
+                            hostels = emptyList(),
+                            isLoading = false,
+                            notFound = true
+                        )
+                    }
+                } else {
+                    _uiState.update { state->
+                        state.copy(
+                            isLoading = false,
+                            hostels = hostels,
+                            notFound = false
+                        )
+                    }
+                }
+            }
         }
-
     }
 
     fun getHostelInfo(hostelId: String) {
@@ -52,7 +72,7 @@ class ExploreViewModel(
                                 state.copy(
                                     hostel = null,
                                     isError = true,
-                                    isLoading = false
+                                    isLoading = false,
                                 )
                             }
                         }
@@ -77,8 +97,9 @@ class ExploreViewModel(
                 searchText = searchText
             )
         }
-        filterHostelsList()
+        searchHostels(key = searchText)
     }
+
     private fun filterHostelsList() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -89,46 +110,33 @@ class ExploreViewModel(
         }
     }
 
-    fun updateFilterSheetVisibility(boolean: Boolean) {
-        _uiState.update { it.copy(isFilterSheetVisible = boolean) }
+    fun filterUpdateHostelType(hostelType: HostelType) {
+        _uiState.update { it.copy(genderFilter = hostelType) }
+        filterHostelsList()
+    }
+    fun filterUpdateSortType(sortType: SortType) {
+        _uiState.update { it.copy(sortType = sortType) }
+        filterHostelsList()
+    }
+    fun clearFilters() {
+        _uiState.update {
+            it.copy(
+                sortType = null,
+                genderFilter = null,
+                hostels = null
+            )
+        }
     }
 
-//    fun filterUpdateCity(city: AvailableCity) {
-//        _uiState.update { it.copy(city = city) }
-//        filterHostelsList()
-//    }
-//    fun filterUpdateHostelType(hostelType: HostelType) {
-//        _uiState.update { it.copy(genderFilter = hostelType) }
-//        filterHostelsList()
-//    }
-//    fun filterUpdateSortType(sortType: SortType) {
-//        _uiState.update { it.copy(sortType = sortType) }
-//        filterHostelsList()
-//    }
-//    fun clearFilters() {
-//        _uiState.update {
-//            it.copy(
-//                city = null,
-//                sortType = null,
-//                genderFilter = null,
-//                hostels = dummyData
-//            )
-//        }
-//    }
-
-    init {
-        getAllHostelsList()
-    }
 }
 
 data class ExploreUIState(
     val hostels: List<Hostel>? = null,
     val isLoading: Boolean = false,
     val searchText: String = "",
-    val isFilterSheetVisible: Boolean = false,
-    //val city: AvailableCity? = null,
     val sortType: SortType? = SortType.POPULAR,
-    val genderFilter: HostelType? = null
+    val genderFilter: HostelType? = null,
+    val notFound: Boolean = false
 )
 
 data class HostelDetailsUI(

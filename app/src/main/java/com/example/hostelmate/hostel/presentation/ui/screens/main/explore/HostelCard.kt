@@ -1,7 +1,10 @@
 package com.example.hostelmate.hostel.presentation.ui.screens.main.explore
 
 import android.graphics.Paint.Align
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,7 +17,12 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Downloading
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Boy
+import androidx.compose.material.icons.outlined.Girl
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +47,163 @@ import com.example.hostelmate.hostel.data.model.HostelType
 
 @Composable
 fun HostelCard(
+    hostel: Hostel,
+    onClick: (String) -> Unit,
+) {
+    ElevatedCard(
+        onClick = { onClick(hostel.id) },
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 20.dp
+        )
+    ) {
+        Box(
+          modifier = Modifier
+              .fillMaxWidth(0.95f)
+              .aspectRatio(16f / 9f),
+            contentAlignment = Alignment.TopStart
+        ) {
+            Box(
+                contentAlignment = Alignment.BottomStart,
+                modifier = Modifier
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(hostel.pictures.firstOrNull())
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(10.dp)),
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.9f,
+                    placeholder = painterResource(R.drawable.glass_loading_png),
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = hostel.name,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(0.dp, 6.dp, 6.dp, 10.dp)
+                            )
+                            .padding(4.dp)
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(6.dp, 0.dp, 10.dp, 6.dp)
+                            )
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .size(12.dp)
+                        )
+                        Text(
+                            text = hostel.rating.toString(),
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier
+                        )
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(10.dp, 6.dp, 6.dp, 0.dp)
+                        )
+                        .padding(4.dp)
+                ) {
+                    Text(
+                        text = hostel.city,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    )
+                }
+                if(hostel.hostelType == HostelType.BOYS) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(6.dp, 10.dp, 0.dp, 6.dp)
+                            )
+                            .padding(2.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Boys",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
+                                modifier = Modifier.padding(2.dp, 0.dp, 0.dp, 0.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Outlined.Boy,
+                                contentDescription = "boys hostel",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                } else if(hostel.hostelType == HostelType.GIRLS) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(6.dp, 10.dp, 0.dp, 6.dp)
+                            )
+                            .padding(2.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Girls",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
+                                modifier = Modifier.padding(2.dp, 0.dp, 0.dp, 0.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Outlined.Girl,
+                                contentDescription = "girls hostel",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+@Composable
+fun HosteslCard(
     hostel: Hostel
 ) {
     ElevatedCard(

@@ -1,6 +1,7 @@
 package com.example.hostelmate.hostel.data.repository
 
 import android.util.Log
+import androidx.compose.ui.platform.LocalDensity
 import com.example.hostelmate.hostel.data.model.Coordinate
 import com.example.hostelmate.hostel.data.model.Hostel
 import com.example.hostelmate.hostel.data.model.HostelType
@@ -79,5 +80,65 @@ class ExploreRepoImpl(
                     Log.d(HOSTEL_TAG, task.exception?.message ?: "")
                 }
             }
+    }
+
+    override suspend fun searchHostels(key: String, onComplete: (List<Hostel>?) -> Unit) {
+        firebaseFireStore.collection("hostels")
+            .whereArrayContains("searchKeywords", key.lowercase())
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val hostels = snapshot.documents.mapNotNull { doc ->
+                    val name = doc.getString("name")
+                    val city = doc.getString("city")
+                    val description = doc.getString("description") ?: "unavailable"
+                    val hostelType = when (doc.getString("hostelType")) {
+                        "BOYS" -> HostelType.BOYS
+                        "GIRLS" -> HostelType.GIRLS
+                        else -> HostelType.UNAVAILABLE
+                    }
+                    val locality = doc.getString("locality")
+                    val managerName = doc.getString("managerName") ?: "unavailable"
+                    val managerContact = doc.getString("managerContact") ?: "unavailable"
+                    val rating = doc.getString("rating")?.toDoubleOrNull()
+                    val pictures = doc.get("pictures") as? List<String> ?: emptyList()
+                    val facilities = doc.get("facilities") as? List<String> ?: emptyList()
+                    val stayOptionMap = doc.get("stayOptions") as? Map<String, Long>
+                    val coordinates = doc.getGeoPoint("coordinates")
+
+                    val stayOptions = stayOptionMap?.map { (sharing, price) ->
+                        StayOption(
+                            sharing = sharing.toInt(),
+                            cost = price.toInt()
+                        )
+                    }
+
+                    if (name != null && city != null && locality != null && rating != null && stayOptions != null) {
+                        Hostel(
+                            id = doc.id,
+                            name = name,
+                            city = city,
+                            description = description,
+                            hostelType = hostelType,
+                            locality = locality,
+                            managerName = managerName,
+                            managerContact = managerContact,
+                            rating = rating,
+                            pictures = pictures,
+                            facilities = facilities,
+                            stayOptions = stayOptions,
+                            coordinates = Coordinate(
+                                latitude = coordinates?.latitude.toString(),
+                                longitude = coordinates?.longitude.toString()
+                            )
+                        )
+                    } else null
+                }
+                onComplete(hostels.ifEmpty { null })
+            }
+            .addOnFailureListener {excep->
+                Log.e(HOSTEL_TAG, "Error fetching hostels: ${excep.message}")
+                onComplete(null)
+            }
+
     }
 }
